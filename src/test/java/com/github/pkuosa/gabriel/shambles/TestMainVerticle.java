@@ -28,10 +28,9 @@ public class TestMainVerticle {
     vertx.createHttpClient().getNow(8080, "localhost", "/", response -> testContext.verify(() -> {
       assertTrue(response.statusCode() == 200);
       response.handler(body -> {
-        assertTrue(body.toString().contains("Hello from Vert.x!"));
+        assertTrue(body.toString().contains("Hello World from Vert.x-Web!"));
         testContext.completeNow();
       });
     }));
   }
-
 }
