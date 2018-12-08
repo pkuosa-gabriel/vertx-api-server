@@ -1,26 +1,37 @@
 package com.github.pkuosa.gabriel.shambles;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
-import io.vertx.core.http.*;
-import io.vertx.ext.web.*;
+import io.vertx.reactivex.core.AbstractVerticle;
+import io.vertx.reactivex.ext.web.Router;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class MainVerticle extends AbstractVerticle {
 
+  final Logger logger = LoggerFactory.getLogger(MainVerticle.class);
+
   @Override
-  public void start(Future<Void> startFuture) throws Exception {
-    HttpServer server = vertx.createHttpServer();
-    Router router = Router.router(vertx);
+  public void start() throws Exception {
+    var server = vertx.createHttpServer();
 
-    router.route().handler(routingContext -> {
-      // 所有的请求都会调用这个处理器处理
-      HttpServerResponse response = routingContext.response();
-      response.putHeader("content-type", "text/plain");
+    var router = Router.router(vertx);
 
-      // 写入响应并结束处理
-      response.end("Hello World from Vert.x-Web!");
-    });
+    router.route("/").handler(routingContext ->
+      routingContext
+        .response()
+        .putHeader("content-type", "text/plain")
+        .end("Hello World from Vert.x-Web!")
+    );
 
-    server.requestHandler(router::accept).listen(8080);
+    router.route("/about").handler(routingContext ->
+      routingContext
+        .response()
+        .putHeader("content-type", "text/plain")
+        .end("With best regards from Gabriel@PKUOSA!")
+    );
+    server
+      .requestHandler(router)
+      .rxListen(8080)
+      .subscribe(httpServer -> logger.info("server is running..."));
   }
 }
