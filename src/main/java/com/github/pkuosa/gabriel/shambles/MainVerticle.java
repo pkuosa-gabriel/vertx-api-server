@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class MainVerticle extends AbstractVerticle {
 
-  final Logger logger = LoggerFactory.getLogger(MainVerticle.class);
+  private final Logger logger = LoggerFactory.getLogger(MainVerticle.class);
 
   @Override
   public void start() throws Exception {
