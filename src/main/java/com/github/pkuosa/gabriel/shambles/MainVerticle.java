@@ -8,30 +8,34 @@ import org.slf4j.LoggerFactory;
 
 public class MainVerticle extends AbstractVerticle {
 
-  private final Logger logger = LoggerFactory.getLogger(MainVerticle.class);
+  private static final Logger logger = LoggerFactory.getLogger(MainVerticle.class);
 
   @Override
   public void start() throws Exception {
     var server = vertx.createHttpServer();
-
     var router = Router.router(vertx);
+    var port = System.getProperty("port", "8080");
 
-    router.route("/").handler(routingContext ->
+    router.route("/").handler(routingContext -> {
+      logger.info("Got a request on /");
       routingContext
         .response()
         .putHeader("content-type", "text/plain")
-        .end("Hello World from Vert.x-Web!")
-    );
+        .end("Hello World from Vert.x-Web!");
+    });
 
-    router.route("/about").handler(routingContext ->
+    router.route("/about").handler(routingContext -> {
+      logger.info("Got a request on /about");
       routingContext
         .response()
         .putHeader("content-type", "text/plain")
-        .end("With best regards from Gabriel@PKUOSA!")
-    );
+        .end("With best regards from Gabriel@PKUOSA!");
+    });
     server
       .requestHandler(router)
-      .rxListen(8080)
-      .subscribe(httpServer -> logger.info("server is running..."));
+      .rxListen(Integer.parseInt(port))
+      .subscribe(
+        httpServer -> logger.info("server is running on localhost:" + port),
+        httpServer -> logger.error("server cannot start"));
   }
 }
