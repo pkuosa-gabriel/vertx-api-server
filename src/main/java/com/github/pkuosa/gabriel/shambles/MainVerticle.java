@@ -11,7 +11,7 @@ public class MainVerticle extends AbstractVerticle {
   private static final Logger logger = LoggerFactory.getLogger(MainVerticle.class);
 
   @Override
-  public void start() throws Exception {
+  public void start() throws RuntimeException {
     var server = vertx.createHttpServer();
     var router = Router.router(vertx);
     var port = System.getProperty("port", "8080");
@@ -36,6 +36,9 @@ public class MainVerticle extends AbstractVerticle {
       .rxListen(Integer.parseInt(port))
       .subscribe(
         httpServer -> logger.info("server is running on localhost:" + port),
-        httpServer -> logger.error("server cannot start"));
+        httpServer -> {
+          logger.error("server cannot start");
+          throw new RuntimeException("server cannot start");
+        });
   }
 }
