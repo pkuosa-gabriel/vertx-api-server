@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.vertx.junit5.Timeout;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
+import io.vertx.reactivex.core.MultiMap;
 import io.vertx.reactivex.core.RxHelper;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.ext.web.client.WebClient;
@@ -45,7 +46,8 @@ public class TestMainVerticle {
               assertTrue(response.body().contains("Hello World from Vert.x-Web!"));
               checkpoints.flag();
             }),
-        testContext::failNow);
+          testContext::failNow
+      );
   }
 
   @Test
@@ -68,6 +70,35 @@ public class TestMainVerticle {
               assertTrue(response.body().contains("With best regards from Gabriel@PKUOSA!"));
               checkpoints.flag();
             }),
-        testContext::failNow);
+          testContext::failNow
+      );
+  }
+
+  @Test
+  @DisplayName("🚀 Test the /multipart route.")
+  @Timeout(value = 1, timeUnit = TimeUnit.SECONDS)
+  void test_multipart(Vertx vertx, VertxTestContext testContext) {
+    var checkpoints = testContext.checkpoint(10);
+    var client = WebClient.create(vertx);
+    var form = MultiMap.caseInsensitiveMultiMap();
+    form.set("name", "Test");
+    var request =
+      client
+        .post(8080, "localhost", "/multipart")
+        .putHeader("content-type", "multipart/form-data")
+        .as(BodyCodec.string());
+    request
+      .rxSendForm(form)
+      .repeat(10)
+      .subscribe(
+        response ->
+          testContext.verify(
+            () -> {
+              assertTrue(response.statusCode() == 200);
+              assertTrue(response.body().contains("Hello, Test"));
+              checkpoints.flag();
+            }),
+          testContext::failNow
+      );
   }
 }
