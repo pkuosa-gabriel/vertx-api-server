@@ -1,6 +1,6 @@
 # vertx-api-server(code name: _Shambles_)
 
-![vert.x](https://img.shields.io/badge/vert.x-3.6.2-purple.svg)
+![vert.x](https://img.shields.io/badge/vert.x-3.7.1-purple.svg)
 
 This application was generated using http://start.vertx.io
 
